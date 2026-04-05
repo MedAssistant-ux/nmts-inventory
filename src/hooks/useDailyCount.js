@@ -118,12 +118,29 @@ export function useDailyCount() {
   // Keep recordId ref in sync
   useEffect(() => { recordIdRef.current = recordId; }, [recordId]);
 
-  useEffect(() => { loadToday(); }, []);
+  useEffect(() => { loadDate(todayString()); }, []);
 
-  async function loadToday() {
+  async function loadDate(targetDate) {
+    // Flush any pending saves before switching
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    if (Object.keys(pendingChanges.current).length > 0 && data.date) {
+      const changes = { ...pendingChanges.current };
+      pendingChanges.current = {};
+      if (!isConfigured) {
+        saveLocal(data.date, { ...data, ...changes });
+      } else if (recordIdRef.current) {
+        try {
+          await supabase.from('daily_counts').update(sanitizeForDb(changes)).eq('id', recordIdRef.current);
+        } catch { /* best effort */ }
+      }
+    }
+
     setLoading(true);
     setError(null);
-    const today = todayString();
+    const today = targetDate;
 
     if (!isConfigured) {
       setUsingLocal(true);
@@ -264,7 +281,17 @@ export function useDailyCount() {
     saveTimer.current = setTimeout(() => flushPendingChanges(latestData), 1000);
   }
 
+  function navigateToDate(newDate) {
+    if (newDate === data.date) return;
+    loadDate(newDate);
+  }
+
   function updateField(field, value) {
+    // Date changes should use navigateToDate, not updateField
+    if (field === 'date') {
+      navigateToDate(value);
+      return;
+    }
     setData(prev => {
       const next = { ...prev, [field]: value };
       pendingChanges.current[field] = value;
@@ -307,7 +334,7 @@ export function useDailyCount() {
     updateField,
     updatePartial,
     setCloseBulkFull,
-    loadToday,
+    navigateToDate,
   };
 }
 

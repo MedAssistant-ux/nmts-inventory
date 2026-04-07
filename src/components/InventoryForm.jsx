@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { AlertCircle, Printer, CheckCircle, Loader2, FileDown, Calendar, Shield, Calculator } from 'lucide-react';
+import { AlertCircle, Printer, CheckCircle, Loader2, FileDown, Calendar, Shield, Calculator, BookOpen } from 'lucide-react';
 import BulkSection from './BulkSection';
 import UnitDoseSection from './UnitDoseSection';
 import VerifierSelect from './VerifierSelect';
@@ -158,6 +158,9 @@ export default function InventoryForm({ data, saving, updateField, updatePartial
               <div className="flex flex-wrap gap-2 justify-end">
                 <a href="https://medassistant-ux.github.io/methadone-dose-calculator/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md font-semibold transition-colors shadow-md text-sm">
                   <Calculator className="w-4 h-4" /> Dose Calculator
+                </a>
+                <a href="https://medassistant-ux.github.io/instruction-maker/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-semibold transition-colors shadow-md text-sm">
+                  <BookOpen className="w-4 h-4" /> How-To Guides
                 </a>
                 {onViewHistory && (
                   <button onClick={onViewHistory} className="flex items-center gap-1.5 bg-slate-600 hover:bg-slate-500 text-white px-3 py-1.5 rounded-md font-semibold transition-colors shadow-md text-sm">

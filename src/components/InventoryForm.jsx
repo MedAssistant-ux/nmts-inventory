@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { AlertCircle, Printer, CheckCircle, Loader2, FileDown, Calendar, Shield, Calculator, BookOpen } from 'lucide-react';
+
+const noScroll = e => e.target.blur();
+const noArrows = e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); };
 import BulkSection from './BulkSection';
 import UnitDoseSection from './UnitDoseSection';
 import VerifierSelect from './VerifierSelect';
@@ -307,7 +310,7 @@ export default function InventoryForm({ data, saving, updateField, updatePartial
                 <div className="bg-slate-50 p-3 rounded-lg border border-gray-200">
                   <label className="block text-sm font-bold text-gray-700 mb-1">Total Dispensed <span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <input type="number" min="0" value={data.dispensed_amount} onChange={e => _updateField('dispensed_amount', e.target.value === '' ? '' : Number(e.target.value))} className={`w-full rounded-md shadow-sm p-2 border pr-12 ${closeStarted && (data.dispensed_amount === '' || Number(data.dispensed_amount) === 0) ? 'border-red-300' : 'border-gray-300'}`} />
+                    <input type="number" min="0" value={data.dispensed_amount} onChange={e => _updateField('dispensed_amount', e.target.value === '' ? '' : Number(e.target.value))} onWheel={noScroll} onKeyDown={noArrows} className={`w-full rounded-md shadow-sm p-2 border pr-12 ${closeStarted && (data.dispensed_amount === '' || Number(data.dispensed_amount) === 0) ? 'border-red-300' : 'border-gray-300'}`} />
                     <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-sm">Mgs</span>
                   </div>
                 </div>
@@ -315,7 +318,7 @@ export default function InventoryForm({ data, saving, updateField, updatePartial
                 <div className="bg-slate-50 p-3 rounded-lg border border-gray-200">
                   <label className="block text-sm font-bold text-gray-700 mb-1">Waste/Spill</label>
                   <div className="relative mb-2">
-                    <input type="number" min="0" value={data.waste_amount} onChange={e => _updateField('waste_amount', e.target.value === '' ? '' : Number(e.target.value))} className="w-full rounded-md border-gray-300 shadow-sm p-2 border pr-12" />
+                    <input type="number" min="0" value={data.waste_amount} onChange={e => _updateField('waste_amount', e.target.value === '' ? '' : Number(e.target.value))} onWheel={noScroll} onKeyDown={noArrows} className="w-full rounded-md border-gray-300 shadow-sm p-2 border pr-12" />
                     <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-sm">Mgs</span>
                   </div>
                   {(Number(data.waste_amount) > 0) && (

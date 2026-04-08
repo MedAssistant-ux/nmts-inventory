@@ -1,6 +1,9 @@
 import React from 'react';
 import { calcVariance } from '../utils/validation';
 
+const noScroll = e => e.target.blur();
+const noArrows = e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); };
+
 export default function UnitDoseSection({
   methasoft, actual, notes, unitTotalMgs,
   onMethasoftChange, onActualChange, onNotesChange, onUnitTotalMgsChange,
@@ -22,6 +25,7 @@ export default function UnitDoseSection({
             type="number" min="0" step="1"
             value={methasoft}
             onChange={e => onMethasoftChange(e.target.value === '' ? '' : Number(e.target.value))}
+            onWheel={noScroll} onKeyDown={noArrows}
             disabled={locked}
             className={`mt-1 w-full rounded-md border-gray-300 shadow-sm ${ringClass} p-2 border ${locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} print:p-1 print:text-sm`}
           />
@@ -32,6 +36,7 @@ export default function UnitDoseSection({
             type="number" min="0" step="1"
             value={actual}
             onChange={e => onActualChange(e.target.value === '' ? '' : Number(e.target.value))}
+            onWheel={noScroll} onKeyDown={noArrows}
             disabled={locked}
             className={`mt-1 w-full rounded-md border-gray-300 shadow-sm ${ringClass} p-2 border ${locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} print:p-1 print:text-sm`}
           />
@@ -69,6 +74,7 @@ export default function UnitDoseSection({
             type="number" min="0"
             value={unitTotalMgs}
             onChange={e => onUnitTotalMgsChange(e.target.value === '' ? '' : Number(e.target.value))}
+            onWheel={noScroll} onKeyDown={noArrows}
             disabled={locked}
             className={`w-full rounded-md border-gray-300 shadow-sm ${ringClass} p-2 border pr-12 ${locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} print:p-1 print:text-sm`}
           />

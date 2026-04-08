@@ -1,6 +1,9 @@
 import React from 'react';
 import { calcBulkTotal } from '../utils/validation';
 
+const noScroll = e => e.target.blur();
+const noArrows = e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); };
+
 export default function BulkSection({ bulkFull, partials, onBulkFullChange, onPartialChange, locked, accent = 'emerald' }) {
   const bulkMgs = (Number(bulkFull) || 0) * 10000;
   const bulkTotal = calcBulkTotal(bulkFull, partials);
@@ -27,6 +30,7 @@ export default function BulkSection({ bulkFull, partials, onBulkFullChange, onPa
             type="number" min="0" step="1"
             value={bulkFull}
             onChange={e => onBulkFullChange(e.target.value === '' ? '' : Number(e.target.value))}
+            onWheel={noScroll} onKeyDown={noArrows}
             disabled={locked}
             className={`mt-1 w-full rounded-md border-gray-300 shadow-sm ${ringClass} p-2 border ${locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} ${bulkFull === '' || bulkFull === 0 ? '' : ''}`}
           />
@@ -56,6 +60,7 @@ export default function BulkSection({ bulkFull, partials, onBulkFullChange, onPa
                   type="number" min="0" max="15000"
                   value={val}
                   onChange={e => handlePartialChange(idx, e.target.value)}
+                  onWheel={noScroll} onKeyDown={noArrows}
                   disabled={locked}
                   className={`w-full rounded-md shadow-sm ${ringClass} p-2 border pr-12 ${locked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} ${isOver ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
                 />

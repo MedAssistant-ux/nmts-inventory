@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { AlertCircle, Printer, CheckCircle, Loader2, FileDown, Calendar, Shield, Calculator, BookOpen } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { AlertCircle, Printer, CheckCircle, Loader2, FileDown, Calendar, Shield, Calculator, BookOpen, ClipboardCopy } from 'lucide-react';
 
 const noScroll = e => e.target.blur();
 const noArrows = e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); };
@@ -385,11 +385,104 @@ export default function InventoryForm({ data, saving, updateField, updatePartial
           </div>
         </div>
 
+        {/* Spreadsheet Copy Row */}
+        {!readOnly && <SpreadsheetRow data={data} openGrandTotal={openGrandTotal} />}
+
         {/* Footer */}
         <div className="max-w-7xl mx-auto mt-6 text-center text-xs text-gray-400">
           NMTS Safe Inventory Daily Count &middot; {data.date}
         </div>
       </div>
     </>
+  );
+}
+
+function SpreadsheetRow({ data, openGrandTotal }) {
+  const [copied, setCopied] = useState(false);
+
+  const cell = v => (v === '' || v == null || v === 0) ? '' : v;
+
+  const cells = [
+    cell(openGrandTotal),                         // Open Bulk Total + Unit Mgs Total
+    cell(data.close_bulk_full),                    // Close bulk bottles
+    '',                                            // Empty
+    '',                                            // (spreadsheet formula)
+    cell(data.close_partials?.[0]),                // Partial 1 close
+    cell(data.close_partials?.[1]),                // Partial 2 close
+    cell(data.close_partials?.[2]),                // Partial 3 close
+    cell(data.close_partials?.[3]),                // Partial 4 close
+    cell(data.close_partials?.[4]),                // Partial 5 close
+    '',                                            // (spreadsheet formula)
+    '',                                            // Empty
+    cell(data.close_unit_total_mgs),              // Unit Total Mgs close
+    '',                                            // Empty
+    cell(data.dispensed_amount),                   // Total Dispensed close
+  ];
+
+  const tsvRow = cells.join('\t');
+
+  const labels = [
+    'Open Grand Total',
+    'Close Bulk Bottles',
+    '',
+    '(formula)',
+    'Partial 1',
+    'Partial 2',
+    'Partial 3',
+    'Partial 4',
+    'Partial 5',
+    '(formula)',
+    '',
+    'Unit Total Mgs',
+    '',
+    'Total Dispensed',
+  ];
+
+  function handleCopy() {
+    navigator.clipboard.writeText(tsvRow).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto mt-6">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-bold text-gray-700">Spreadsheet Row — Click to copy, then paste into your spreadsheet</h4>
+          <button
+            onClick={handleCopy}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold text-sm transition-colors shadow-sm ${
+              copied ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-slate-800 text-white'
+            }`}
+          >
+            <ClipboardCopy className="w-4 h-4" />
+            {copied ? 'Copied!' : 'Copy Row'}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr>
+                {labels.map((label, i) => (
+                  <th key={i} className="border border-gray-200 bg-gray-50 px-2 py-1 text-gray-500 font-medium text-center whitespace-nowrap">
+                    {label || <span className="text-gray-300">—</span>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {cells.map((val, i) => (
+                  <td key={i} className={`border border-gray-200 px-2 py-1.5 text-center font-mono text-sm ${val !== '' ? 'text-gray-900 bg-white' : 'bg-gray-50'}`}>
+                    {val !== '' ? val.toLocaleString() : ''}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
